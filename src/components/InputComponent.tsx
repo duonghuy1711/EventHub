@@ -1,4 +1,4 @@
-import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet } from 'react-native'
+import { View, TextInput, TouchableOpacity, StyleSheet, StyleProp, TextStyle } from 'react-native'
 import React, { ReactNode } from 'react'
 
 interface Props {

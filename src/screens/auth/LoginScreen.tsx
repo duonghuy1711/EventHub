@@ -118,7 +118,22 @@ const LoginScreen = ({navigation}: any) => {
               <Text style={{marginLeft: 6, fontSize: 15}}>Remember Me</Text>
             </View>
 
-            <Text style={{marginRight: 5, fontSize: 15}}>Forgot Password?</Text>
+            <Pressable
+                onPress={() => navigation.navigate('ForgotPassword')}
+            >
+                 {({pressed}) => (
+                <Text
+                  style={{
+                    fontSize: 15,
+                    color: pressed ? '#e4dfdf' : 'black',
+                    fontWeight: '400',
+                    marginRight: 5
+                  }}>
+                Forgot Password?
+                </Text>
+              )}
+
+            </Pressable>
           </View>
 
           <View
