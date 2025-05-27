@@ -5,6 +5,6 @@ export const globalStyles = {
 
   section: {
     paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingVertical: 12,
   }
 };

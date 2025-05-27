@@ -12,7 +12,7 @@ interface Props {
 const TextComponent = (prop: Props) => {
   const {text, color, fontSize, styles, fontWeight} = prop;
   return (
-    <Text
+    <Text 
       style={[
         {
           color: color || 'white',

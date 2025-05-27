@@ -12,12 +12,24 @@ import InputComponent from '../../components/InputComponent';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import TextComponent from '../../components/TextComponent';
+import authenticationAPI from '../../apis/authApi';
 
 const LoginScreen = ({navigation}: any) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(true);
   const [rememberMe, setRememberMe] = useState(false);
+
+  const handleLogin = async () => {
+   try {
+    const res = await authenticationAPI.HandleAuthentication('/hello');
+    console.log(res);
+   } catch (error) {
+    console.log(error);
+   }
+  };
+
+
 
   return (
     <View style={[globalStyles.container]}>
@@ -42,6 +54,7 @@ const LoginScreen = ({navigation}: any) => {
               style={{
                 width: 162,
                 height: 114,
+                marginTop: 30,
               }}
               resizeMode="contain"
             />
@@ -52,7 +65,7 @@ const LoginScreen = ({navigation}: any) => {
               text="Sign In"
               color="black"
               fontWeight="400"
-              fontSize={24}
+              fontSize={22}
               styles={{marginRight: 300}}></TextComponent>
           </View>
 
@@ -91,6 +104,7 @@ const LoginScreen = ({navigation}: any) => {
                   name={showPassword ? 'eye-outline' : 'eye-off-outline'}
                   size={22}
                   color="#807a7a"
+                  style={{right: 5}}
                 />
               }
               onRightIconPress={() => setShowPassword(!showPassword)}
@@ -101,7 +115,7 @@ const LoginScreen = ({navigation}: any) => {
             style={[
               {
                 flexDirection: 'row',
-                gap: 95,
+                gap: 85,
                 alignItems: 'center',
                 justifyContent: 'space-between',
               },
@@ -118,21 +132,18 @@ const LoginScreen = ({navigation}: any) => {
               <Text style={{marginLeft: 6, fontSize: 15}}>Remember Me</Text>
             </View>
 
-            <Pressable
-                onPress={() => navigation.navigate('ForgotPassword')}
-            >
-                 {({pressed}) => (
+            <Pressable onPress={() => navigation.navigate('ForgotPassword')}>
+              {({pressed}) => (
                 <Text
                   style={{
                     fontSize: 15,
                     color: pressed ? '#e4dfdf' : 'black',
                     fontWeight: '400',
-                    marginRight: 5
+                    marginRight: 5,
                   }}>
-                Forgot Password?
+                  Forgot Password?
                 </Text>
               )}
-
             </Pressable>
           </View>
 
@@ -144,9 +155,9 @@ const LoginScreen = ({navigation}: any) => {
                 alignItems: 'center',
               },
             ]}>
-            <TouchableOpacity
-              onPress={() => console.log('Login')}
-              activeOpacity={0.8}
+            <Pressable
+              onPress={() => handleLogin()}
+              // activeOpacity={0.8}
               style={{
                 width: '70%',
                 backgroundColor: '#5669ff',
@@ -172,7 +183,8 @@ const LoginScreen = ({navigation}: any) => {
                 style={{left: 75}}
                 color="#ffff"
               />
-            </TouchableOpacity>
+              
+            </Pressable>
           </View>
 
           <View style={[globalStyles.section]}>
@@ -182,6 +194,7 @@ const LoginScreen = ({navigation}: any) => {
               fontSize={16}
               fontWeight="500"
             />
+
           </View>
 
           <View

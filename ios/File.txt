@@ -1,0 +1,1 @@
+/Users/huy/eventhub-project/clients/Apphoctap/node_modules/react-native-vector-icons/Fonts
