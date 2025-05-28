@@ -33,6 +33,11 @@ const InputComponent = (prop: Props) => {
         onChangeText={onChangeText}
         secureTextEntry={secureTextEntry}
         keyboardType={keyboardType}
+        autoComplete="off"
+        textContentType="none"
+        importantForAutofill="no"
+        dataDetectorTypes="none"
+        keyboardAppearance="default"
       />
        {rightIcon && (
         <TouchableOpacity onPress={onRightIconPress} style={styles.rightIcon}>

@@ -1,3 +1,4 @@
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -5,43 +6,92 @@ import {
   Image,
   TouchableOpacity,
   Pressable,
+  Alert,
 } from 'react-native';
-import React, {useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {globalStyles} from '../../constants/globalStyles';
 import InputComponent from '../../components/InputComponent';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import TextComponent from '../../components/TextComponent';
+import {validate} from '../../utils/validate';
+import Loading from '../../components/IsLoadingComponent';
+import authenticationAPI from '../../apis/authApi';
 
 const SignupScreen = () => {
   const navigation = useNavigation();
-
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [cfpassword, setCfpassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showCfPassword, setShowCfPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleRegister = async () => {
+    const trimedEmail = email.trim();
+    const trimedPassword = password.trim();
+    const trimedCfPassword = cfpassword.trim();
+    const trimedFullName = fullName.trim();
+
+    if (
+      !trimedEmail ||
+      !trimedPassword ||
+      !trimedCfPassword ||
+      !trimedFullName
+    ) {
+      Alert.alert('Vui lòng điền đầy đủ thông tin');
+      return;
+    }
+
+    if (!validate.email(trimedEmail)) {
+      Alert.alert('Email không hợp lệ');
+      return;
+    }
+
+    if (trimedPassword !== trimedCfPassword) {
+      Alert.alert('Mật khẩu không trùng khớp');
+      return;
+    }
+
+    if (trimedPassword.length < 6) {
+      Alert.alert('Mật khẩu phải có ít nhất 6 ký tự');
+      return;
+    }
+
+    const updatedValues = {
+      fullname: trimedFullName,
+      email: trimedEmail,
+      password: trimedPassword,
+      // confirmPassword: trimedCfPassword,
+    };
+
+    setIsLoading(true);
+    try {
+      const res = await authenticationAPI.HandleAuthentication(
+        '/register',
+          updatedValues,
+        'post',
+      );
+      console.log(res);
+      Alert.alert('Đăng ký thành công!');
+      navigation.goBack();
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Đăng ký thất bại');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <View style={[globalStyles.container]}>
+    <View style={globalStyles.container}>
       <ImageBackground
         source={require('../../assets/images/Splash.png')}
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        {/* Nút quay lại */}
+        style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          style={{
-            position: 'absolute',
-            top: 65,
-            left: 20,
-            zIndex: 10,
-          }}>
+          style={{position: 'absolute', top: 65, left: 20, zIndex: 10}}>
           <MaterialIcons name="arrow-back" size={28} color="#000" />
         </TouchableOpacity>
 
@@ -52,7 +102,7 @@ const SignupScreen = () => {
             alignItems: 'center',
             width: '100%',
           }}>
-          <View style={[globalStyles.section]}>
+          <View style={globalStyles.section}>
             <TextComponent
               text="Sign up"
               color="black"
@@ -62,12 +112,11 @@ const SignupScreen = () => {
             />
           </View>
 
-          {/* Full name */}
           <View style={[globalStyles.section, {width: '100%'}]}>
             <InputComponent
               placeholder="Full name"
               value={fullName}
-              onChangeText={text => setFullName(text)}
+              onChangeText={setFullName}
               keyboardType="default"
               secureTextEntry={false}
               icon={
@@ -80,12 +129,11 @@ const SignupScreen = () => {
             />
           </View>
 
-          {/* Email */}
           <View style={[globalStyles.section, {width: '100%'}]}>
             <InputComponent
               placeholder="abc@gmail.com"
               value={email}
-              onChangeText={text => setEmail(text)}
+              onChangeText={setEmail}
               keyboardType="email-address"
               secureTextEntry={false}
               icon={
@@ -98,13 +146,12 @@ const SignupScreen = () => {
             />
           </View>
 
-          {/* Password */}
           <View style={[globalStyles.section, {width: '100%'}]}>
             <InputComponent
               placeholder="Your password"
               secureTextEntry={!showPassword}
               value={password}
-              onChangeText={pass => setPassword(pass)}
+              onChangeText={setPassword}
               icon={
                 <MaterialCommunityIcons
                   name="lock-outline"
@@ -124,13 +171,12 @@ const SignupScreen = () => {
             />
           </View>
 
-          {/* Confirm Password */}
           <View style={[globalStyles.section, {width: '100%'}]}>
             <InputComponent
               placeholder="Confirm password"
               secureTextEntry={!showCfPassword}
               value={cfpassword}
-              onChangeText={cfpass => setCfpassword(cfpass)}
+              onChangeText={setCfpassword}
               icon={
                 <MaterialCommunityIcons
                   name="lock-outline"
@@ -150,14 +196,13 @@ const SignupScreen = () => {
             />
           </View>
 
-          {/* Sign up button */}
           <View
             style={[
               globalStyles.section,
               {width: '100%', alignItems: 'center'},
             ]}>
             <TouchableOpacity
-              onPress={() => console.log('Signup')}
+              onPress={handleRegister}
               activeOpacity={0.8}
               style={{
                 width: '70%',
@@ -177,7 +222,6 @@ const SignupScreen = () => {
                 }}>
                 SIGN UP
               </Text>
-
               <MaterialIcons
                 name="arrow-circle-right"
                 size={30}
@@ -187,8 +231,7 @@ const SignupScreen = () => {
             </TouchableOpacity>
           </View>
 
-          {/* OR */}
-          <View style={[globalStyles.section]}>
+          <View style={globalStyles.section}>
             <TextComponent
               text="OR"
               color="#807a7a"
@@ -197,7 +240,6 @@ const SignupScreen = () => {
             />
           </View>
 
-          {/* Login with Google */}
           <View
             style={[
               globalStyles.section,
@@ -227,7 +269,6 @@ const SignupScreen = () => {
             </TouchableOpacity>
           </View>
 
-          {/* Login with Facebook */}
           <View
             style={[
               globalStyles.section,
@@ -258,14 +299,12 @@ const SignupScreen = () => {
             </TouchableOpacity>
           </View>
 
-          {/* Link to Sign in */}
           <View
             style={[
               globalStyles.section,
               {flexDirection: 'row', gap: 10, marginTop: 10},
             ]}>
             <Text style={{fontSize: 16}}>Already have an account?</Text>
-
             <Pressable onPress={() => navigation.goBack()}>
               {({pressed}) => (
                 <Text
@@ -281,6 +320,7 @@ const SignupScreen = () => {
           </View>
         </View>
       </ImageBackground>
+      <Loading visible={isLoading} onDismiss={() => setIsLoading(false)} />
     </View>
   );
 };
