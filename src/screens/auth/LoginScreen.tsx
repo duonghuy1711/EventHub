@@ -5,6 +5,7 @@ import {
   Image,
   TouchableOpacity,
   Pressable,
+  Alert,
 } from 'react-native';
 import React, {useState} from 'react';
 import {globalStyles} from '../../constants/globalStyles';
@@ -13,23 +14,46 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import TextComponent from '../../components/TextComponent';
 import authenticationAPI from '../../apis/authApi';
+import {validate} from '../../utils/validate';
+import { useDispatch } from 'react-redux';
+import { addAuth } from '../../redux/reducers/authReducer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = ({navigation}: any) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(true);
   const [rememberMe, setRememberMe] = useState(false);
+  
+  const dispatch = useDispatch();
 
   const handleLogin = async () => {
-   try {
-    const res = await authenticationAPI.HandleAuthentication('/hello');
-    console.log(res);
-   } catch (error) {
-    console.log(error);
-   }
+    const trimedEmail = email.trim();
+    const trimedPassword = password.trim();
+    if (!trimedEmail || !trimedPassword) {
+      Alert.alert('Vui lòng điền đầy đủ thông tin');
+      return;
+    }
+
+    if (validate.email(trimedEmail)) {
+      try {
+        const res = await authenticationAPI.HandleAuthentication(
+          '/login',
+          {email, password},
+          'post',
+        );
+        dispatch(addAuth(res.data))
+
+        await AsyncStorage.setItem('auth', rememberMe ? JSON.stringify(res.data) : email)
+        
+        console.log(res);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      Alert.alert('Vui lòng nhập đúng định dạng email');
+    }
   };
-
-
 
   return (
     <View style={[globalStyles.container]}>
@@ -183,7 +207,6 @@ const LoginScreen = ({navigation}: any) => {
                 style={{left: 75}}
                 color="#ffff"
               />
-              
             </Pressable>
           </View>
 
@@ -194,7 +217,6 @@ const LoginScreen = ({navigation}: any) => {
               fontSize={16}
               fontWeight="500"
             />
-
           </View>
 
           <View

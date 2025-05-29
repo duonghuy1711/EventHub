@@ -17,6 +17,9 @@ import TextComponent from '../../components/TextComponent';
 import {validate} from '../../utils/validate';
 import Loading from '../../components/IsLoadingComponent';
 import authenticationAPI from '../../apis/authApi';
+import { useDispatch } from 'react-redux';
+import { addAuth } from '../../redux/reducers/authReducer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SignupScreen = () => {
   const navigation = useNavigation();
@@ -27,6 +30,8 @@ const SignupScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showCfPassword, setShowCfPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const dispath = useDispatch();
 
   const handleRegister = async () => {
     const trimedEmail = email.trim();
@@ -73,7 +78,8 @@ const SignupScreen = () => {
           updatedValues,
         'post',
       );
-      console.log(res);
+     dispath(addAuth(res.data));
+     await AsyncStorage.setItem('auth', JSON.stringify(res.data))
       Alert.alert('Đăng ký thành công!');
       navigation.goBack();
     } catch (error) {
